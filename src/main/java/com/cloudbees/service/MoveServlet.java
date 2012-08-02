@@ -1,8 +1,10 @@
 package com.cloudbees.service;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -49,4 +51,18 @@ public class MoveServlet {
 	  
 	   return sw.toString();
 	}
+	
+	@POST	
+	@Produces(MediaType.APPLICATION_JSON)
+	public String newMove() {
+		StringWriter sw = new StringWriter();
+		JsonWriter writer = new JsonWriter(sw);
+		try {
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sw.toString();		
+	}	
 }
+

@@ -1,14 +1,18 @@
 package com.cloudbees.service;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import javax.servlet.http.HttpServlet;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.cloudbees.model.Game;
 import com.google.gson.stream.JsonWriter;
 
 
@@ -50,13 +54,27 @@ public class GameServlet extends HttpServlet {
 	  
 	   return sw.toString();
 	}	
-	
-//	public Game getGame(@PathParam("id") long id ) {
-//		try {
-//		game = entityManager.find(Game.class, id);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return game;
-//	}	
+
+	@POST
+    @Path("new")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public String newGame(Game game) {
+		StringWriter sw = new StringWriter();
+		JsonWriter writer = new JsonWriter(sw);
+		try {
+			DAO dao = new DAO();
+		    dao.connect();
+			long key = dao.newGame(game.getWhite(),
+					                 game.getBlack(),
+					                 game.getDescription());
+			writer.beginObject();
+			writer.name("id").value(key);
+			writer.endObject();
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sw.toString();		
+	}
 }

@@ -1,31 +1,22 @@
 package com.cloudbees.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
-@Entity
-@Table(name="MOVE")
-public class Move {
-	@Id @GeneratedValue(strategy=GenerationType.SEQUENCE)	
+@XmlRootElement
+public class Move {	
 	long id;
 	String white;
 	String black;
-	long game_id;
+	long game;
 
 	public Move() {
 		super();
+		this.id = 0;
+		this.white = "";
+		this.black = "";
+		this.game = 0;
 	}
 	
-    public Move(String white, String black, long game_id) {
-		super();
-		this.white = white;
-		this.black = black;
-		this.game_id = game_id;
-	}
-
 	public String getWhite() {
 		return white;
 	}
@@ -40,5 +31,11 @@ public class Move {
 	}
 	public long getId() {
 		return id;
+	}
+	public long getGame() {
+		return game;
+	}
+	public void setGame(long game) {
+		this.game = game;
 	}
 }

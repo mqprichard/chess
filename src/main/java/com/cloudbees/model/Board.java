@@ -1,17 +1,9 @@
 package com.cloudbees.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-@Entity
-@Table(name="BOARD")
 public class Board {
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)	
 	long id;
 	String row1;
 	String row2;
@@ -21,31 +13,26 @@ public class Board {
 	String row6;
 	String row7;
 	String row8;
-	long game_id;	
+	long game;	
 
     public Board() {
 		super();
+		this.row1 = "";
+		this.row2 = "";
+		this.row3 = "";
+		this.row4 = "";
+		this.row5 = "";
+		this.row6 = "";
+		this.row7 = "";
+		this.row8 = "";
+		this.game = 0;
 	}
         
-	public Board(String row1, String row2, String row3, String row4,
-			String row5, String row6, String row7, String row8, long game_id) {
-		super();
-		this.row1 = row1;
-		this.row2 = row2;
-		this.row3 = row3;
-		this.row4 = row4;
-		this.row5 = row5;
-		this.row6 = row6;
-		this.row7 = row7;
-		this.row8 = row8;
-		this.game_id = game_id;
+	public long getGame() {
+		return game;
 	}
-
-	public long getGame_id() {
-		return game_id;
-	}
-	public void setGame_id(long game_id) {
-		this.game_id = game_id;
+	public void setGame(long game) {
+		this.game = game;
 	}
 	public String getRow1() {
 		return row1;

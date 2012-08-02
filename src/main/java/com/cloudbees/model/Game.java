@@ -1,22 +1,21 @@
 package com.cloudbees.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-@Entity
-@Table(name="GAME")
 public class Game {
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	long id;
 	String white;
 	String black;
 	String description;
-
+	
+	public Game() {
+		super();
+		this.id = 0;
+		this.white = null;
+		this.black = null;
+		this.description = null;
+	}
 	public String getWhite() {
 		return white;
 	}

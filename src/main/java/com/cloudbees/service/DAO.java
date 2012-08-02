@@ -64,15 +64,17 @@ public class DAO {
         return rst; 
     }
     
-    public String newGame (String white, String black, String description){
-        String key = "";
+    public long newGame (String white, String black, String description){
+        long key = 0;
         String sql = "insert into GAME (white, black, description)"
-                   + "values (" + white +"," + black + "," + description + ")";
+                   + "values (\"" + white + "\",\"" + black + "\",\"" + description + "\")";
         try{
+            stmt = conn.createStatement();
         	int rows = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+        	if (rows == 0) return key;
          	ResultSet rs = stmt.getGeneratedKeys();
          	if (rs.next()) {
-         		key = rs.getString(1);
+         		key = rs.getLong(1);
          	}
         } catch (Exception e){
             e.printStackTrace ();
