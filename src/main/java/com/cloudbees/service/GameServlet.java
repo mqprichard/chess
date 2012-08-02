@@ -49,7 +49,7 @@ public class GameServlet extends HttpServlet {
 		}
 	  
 	   return sw.toString();
-	}
+	}	
 	
 //	public Game getGame(@PathParam("id") long id ) {
 //		try {

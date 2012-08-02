@@ -55,7 +55,7 @@ public class DAO {
     public ResultSet getMoves (long game){
         ResultSet rst = null; 
         try{
-         	String query = "select * from MOVE where game_id = " + game;     	
+         	String query = "select * from MOVES where game = " + game;     	
             stmt = conn.createStatement();
             rst = stmt.executeQuery(query);
         } catch (Exception e){
