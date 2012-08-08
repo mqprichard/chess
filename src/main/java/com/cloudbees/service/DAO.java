@@ -52,18 +52,6 @@ public class DAO {
         return rst;
     }    
     
-    public ResultSet getBoard (long game){
-        ResultSet rst = null; 
-        try{
-         	String query = "select * from BOARD where game = " + game;     	
-            stmt = conn.createStatement();
-            rst = stmt.executeQuery(query);
-        } catch (Exception e){
-            e.printStackTrace ();
-        } 
-        return rst; 
-    }
- 
     public ResultSet getMoves (long game){
         ResultSet rst = null; 
         try{
@@ -108,53 +96,6 @@ public class DAO {
     	} 
     	return rows;     	
 }    
-    
-    public long newBoard (long game) {
-        long key = 0;
-        String WhitePieces = "RNBQKBNR";
-        String WhitePawns = "PPPPPPPP";
-        String BlackPieces = "rnbqkbnr";
-        String BlackPawns = "pppppppp";
-        String empty = "";
-                
-        String sql = "insert into BOARD (row1,row2,row3,row4,row5,row6,row7,row8,game)"
-        		   + "values (\"" + WhitePieces + "\",\"" + WhitePawns + "\",\"" 
-        		   + empty + "\",\"" + empty + "\",\"" + empty + "\",\"" + empty + "\",\""
-        		   + BlackPawns + "\",\"" + BlackPieces + "\",\"" + game + "\")";
-        
-        try{
-            stmt = conn.createStatement();
-        	int rows = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-        	if (rows == 0) return key;
-         	ResultSet rs = stmt.getGeneratedKeys();
-         	if (rs.next()) {
-         		key = rs.getLong(1);
-         	}
-        } catch (Exception e){
-            e.printStackTrace ();
-        } 
-        return key;     	
-    }
-    
-    public long updateBoard (int from, String fromRank, 
-    						 int to, String toRank, 
-    						 long game) {
-    	long rows = 0;
-    	String ranks[] = {"row1","row2","row3","row4","row5","row6","row7","row8"};
-    	// from and to are passed as 1-8, convert to 0-7
-    	String sql = "update BOARD"
-    				 + " set " + ranks[from-1] + " = " + fromRank
-    			     + " and " + ranks[to-1] + " = " + toRank
-    			     + " where game = " + game;
- 	
-    	try {
-            stmt = conn.createStatement();
-            rows = stmt.executeUpdate(sql);
-        } catch (Exception e){
-            e.printStackTrace ();
-        } 
-        return rows;     	
-    }
     
     public long newWhiteMove (long move, String white, long game){
         long key = 0; 
