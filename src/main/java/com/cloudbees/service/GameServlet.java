@@ -43,6 +43,9 @@ public class GameServlet extends HttpServlet {
 		       writer.name("white").value(rst.getString(2));	            	
 		       writer.name("black").value(rst.getString(3));
 		       writer.name("description").value(rst.getString(4));
+		       writer.name("result").value(rst.getString(5));
+		       writer.name("next").value(rst.getString(6));
+		       writer.name("move").value(rst.getInt(7));
 			   writer.endObject();
 			   writer.close();	       
 	       }  
@@ -62,19 +65,39 @@ public class GameServlet extends HttpServlet {
 	public String newGame(Game game) {
 		StringWriter sw = new StringWriter();
 		JsonWriter writer = new JsonWriter(sw);
+		long resultCode = 200;
+		long key;
+		
 		try {
 			DAO dao = new DAO();
 		    dao.connect();
-			long key = dao.newGame(game.getWhite(),
-					                 game.getBlack(),
-					                 game.getDescription());
-			writer.beginObject();
-			writer.name("id").value(key);
-			writer.endObject();
-			writer.close();
+		    
+		    // Create a new game (key = game id)
+			key = dao.newGame( game.getWhite(),
+					           game.getBlack(),
+					           game.getDescription() );
+			if (key == 0) {
+				// return Bad Data
+				resultCode = 203;
+			} else {	
+				writer.beginObject();
+				writer.name("id").value(key);
+				writer.endObject();
+				writer.close();
+				
+				// Create a new board for this game
+				key = dao.newBoard(key);
+				if (key == 0) {
+					//return 500 Server Error
+					resultCode = 500;
+				} else
+					return sw.toString();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			//return 500 Server Error
 		}
-		return sw.toString();		
+		System.out.println( "resultCode = " + resultCode);
+		return "";		
 	}
 }

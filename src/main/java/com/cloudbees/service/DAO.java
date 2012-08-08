@@ -40,6 +40,18 @@ public class DAO {
         return rst;
     }
     
+    public ResultSet getNext(long game) {
+        ResultSet rst = null; 
+        try{
+        	String query = "select next from GAME where id = " + game;
+            stmt = conn.createStatement();
+            rst = stmt.executeQuery(query);
+        } catch (Exception e){
+            e.printStackTrace ();
+        } 
+        return rst;
+    }    
+    
     public ResultSet getBoard (long game){
         ResultSet rst = null; 
         try{
@@ -66,8 +78,8 @@ public class DAO {
     
     public long newGame (String white, String black, String description){
         long key = 0;
-        String sql = "insert into GAME (white, black, description)"
-                   + "values (\"" + white + "\",\"" + black + "\",\"" + description + "\")";
+        String sql = "insert into GAME (white, black, description, next, move)"
+                   + " values (\"" + white + "\",\"" + black + "\",\"" + description + "\",\"W\",\"1\")";
         try{
             stmt = conn.createStatement();
         	int rows = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
@@ -80,32 +92,101 @@ public class DAO {
             e.printStackTrace ();
         } 
         return key; 
-    }  
+    } 
     
-    public long newWhiteMove (long move, String white, long game){
-        long result = 0; 
+    public long updateGame (long id, long move, String next, String result) {
+    	long rows = 0;
+    	String sql = "update GAME"
+    			   + " set move = \"" + move + "\",next = \"" + next + "\",result = \"" + result
+    			   + "\" where id = \"" + id +"\"";
+
+    	try {
+    		stmt = conn.createStatement();
+    		rows = stmt.executeUpdate(sql);
+    	} catch (Exception e){
+    		e.printStackTrace ();
+    	} 
+    	return rows;     	
+}    
+    
+    public long newBoard (long game) {
+        long key = 0;
+        String WhitePieces = "RNBQKBNR";
+        String WhitePawns = "PPPPPPPP";
+        String BlackPieces = "rnbqkbnr";
+        String BlackPawns = "pppppppp";
+        String empty = "";
+                
+        String sql = "insert into BOARD (row1,row2,row3,row4,row5,row6,row7,row8,game)"
+        		   + "values (\"" + WhitePieces + "\",\"" + WhitePawns + "\",\"" 
+        		   + empty + "\",\"" + empty + "\",\"" + empty + "\",\"" + empty + "\",\""
+        		   + BlackPawns + "\",\"" + BlackPieces + "\",\"" + game + "\")";
+        
         try{
-         	String query = "insert into MOVES (move, white, game)"
-                         + "values (" + move + "," + white + "" + game + ")";
             stmt = conn.createStatement();
-            result = stmt.executeUpdate(query);
+        	int rows = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+        	if (rows == 0) return key;
+         	ResultSet rs = stmt.getGeneratedKeys();
+         	if (rs.next()) {
+         		key = rs.getLong(1);
+         	}
         } catch (Exception e){
             e.printStackTrace ();
         } 
-        return result; 
+        return key;     	
+    }
+    
+    public long updateBoard (int from, String fromRank, 
+    						 int to, String toRank, 
+    						 long game) {
+    	long rows = 0;
+    	String ranks[] = {"row1","row2","row3","row4","row5","row6","row7","row8"};
+    	// from and to are passed as 1-8, convert to 0-7
+    	String sql = "update BOARD"
+    				 + " set " + ranks[from-1] + " = " + fromRank
+    			     + " and " + ranks[to-1] + " = " + toRank
+    			     + " where game = " + game;
+ 	
+    	try {
+            stmt = conn.createStatement();
+            rows = stmt.executeUpdate(sql);
+        } catch (Exception e){
+            e.printStackTrace ();
+        } 
+        return rows;     	
+    }
+    
+    public long newWhiteMove (long move, String white, long game){
+        long key = 0; 
+        String sql = "insert into MOVES (move, white, game)"
+                   + "values (\"" + move + "\",\"" + white + "\",\"" + game + "\")";
+        try{
+         	stmt = conn.createStatement();
+            int rows = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+        	if (rows == 0) return key;
+         	ResultSet rs = stmt.getGeneratedKeys();
+         	if (rs.next()) {
+         		key = rs.getLong(1);
+         	}
+        } catch (Exception e){
+            e.printStackTrace ();
+        } 
+
+        return key; 
     }  
     
     public long newBlackMove (long move, String black, long game) {
-    	long result = 0;
+    	long rows = 0;
         try{
-         	String query = "update MOVES set " + black
-                         + "where move = " + move + " and game = " + game;
+         	String query = "update MOVES set black = \"" + black + "\"" 
+                         + " where move = \"" + move + "\" and game = \"" + game + "\"";
             stmt = conn.createStatement();
-            result = stmt.executeUpdate(query);
+            rows = stmt.executeUpdate(query);
         } catch (Exception e){
             e.printStackTrace ();
-        } 
-        return result; 
+        }
+
+        return rows; 
     }      	
        
     public void disconnect (){
