@@ -22,13 +22,13 @@ public class MoveServlet {
     @Path("{id}")	
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getMoves(@PathParam("id") long id ) {
+		StatusType statusCode = Response.Status.OK;
 		
 		StringWriter sw = new StringWriter();
 		JsonWriter writer = new JsonWriter(sw);
-		StatusType statusCode = Response.Status.OK;;
+	    DAO dao = new DAO();
 
 		try {
-	       DAO dao = new DAO();
 	       dao.connect();
 
 		   writer.beginObject();
@@ -53,12 +53,18 @@ public class MoveServlet {
 		   writer.endArray();
 		   writer.endObject();
 		   writer.close();
-	       
-		   dao.disconnect();
-		} catch (Exception e) {
+
+		   // Return 200 OK
+		   statusCode = Response.Status.OK;	       
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
+			
 			// Return 500 Server Error
     		statusCode = Response.Status.INTERNAL_SERVER_ERROR;
+		}
+		finally {
+			dao.disconnect();			
 		}
 		
 		if (statusCode != Response.Status.OK)
@@ -74,9 +80,10 @@ public class MoveServlet {
 	public Response newMove( Move move ) {
 		StatusType statusCode = null;
 		String msg = null;
+
+		DAO dao = new DAO();
 		
 		try {
-			DAO dao = new DAO();
 		    dao.connect();
 		    
 		    ResultSet rst = dao.getGame(move.getGame());		   
@@ -87,18 +94,21 @@ public class MoveServlet {
 		    	// White to move
 		    	if (nextPlayer.equalsIgnoreCase("w")) {
 		    		if (! move.isLegal( move.getWhite() )) {
-		    			// Return 400 Bad Request
+		    			// Bad syntax: Return 400 Bad Request
 			    		statusCode = Response.Status.BAD_REQUEST;
 		    		} else {
 		    			if (dao.newWhiteMove( move.getMove(), 
 		    								  move.getWhite(), 
 		    					              move.getGame()) == 0 ) 
+			    			// Bad Move/Game: Return 400 Bad Request
 				    		statusCode = Response.Status.BAD_REQUEST;
 		    			else if (dao.updateGame( move.getGame(), nextMove, "B", "") == 0)
+			    			// Cannot update Game: Return 400 Bad Request
 		    				statusCode = Response.Status.BAD_REQUEST;
 		    			else {
 		    				msg = "{\"move\":" + move.getMove() 
 		    					+ ",\"white\":" + move.getWhite() + "}";
+			    			// Return 200 OK
 				    		statusCode = Response.Status.OK;
 		    			}
 		    		}
@@ -106,31 +116,35 @@ public class MoveServlet {
 		    	// Black to move
 		    	else {
 		    		if (! move.isLegal( move.getBlack() )) {
-		    			// Return 400 Bad Request
+		    			// Bad syntax: Return 400 Bad Request
 			    		statusCode = Response.Status.BAD_REQUEST;
 		    		} else { 
 		    			if (dao.newBlackMove( move.getMove(), 
 		    								  move.getBlack(), 
 		    								  move.getGame()) == 0 )
+		    				// Bad Move/Game: Return 400 Bad Request
 				    		statusCode = Response.Status.BAD_REQUEST;
 		    			else if (dao.updateGame( move.getGame(), nextMove+1, "W", "") == 0)
+		    				// Cannot update Game: Return 400 Bad Request
 		    				statusCode = Response.Status.BAD_REQUEST;		    			
 		    			else {
 		    				msg = "{\"move\":" + move.getMove() 
 		    					+ ",\"black\":" + move.getBlack() + "}";
+		    				// Return 200 OK
 		    				statusCode = Response.Status.OK;
 		    			}
 		    		}
 		    	}
-		    }
-		    dao.disconnect();
-		    
-		} catch (Exception e) {
+		    }		    
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
 			
 			// Return 500 Internal Server Error
     		statusCode = Response.Status.INTERNAL_SERVER_ERROR;
-			Response.status(statusCode).build();
+		}
+		finally {
+		    dao.disconnect();
 		}
 
 		if (statusCode != Response.Status.OK)

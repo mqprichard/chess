@@ -11,6 +11,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.StatusType;
 
 import com.cloudbees.model.Game;
 import com.google.gson.stream.JsonWriter;
@@ -27,15 +29,16 @@ public class GameServlet extends HttpServlet {
 	@GET
     @Path("{id}")	
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getGame(@PathParam("id") long id ) {
+	public Response getGame(@PathParam("id") long id ) {
+		StatusType statusCode = null;
+		String msg = null;
 		
 		StringWriter sw = new StringWriter();
 		JsonWriter writer = new JsonWriter(sw);
-
+	    DAO dao = new DAO();
+		
 		try {
-	       DAO dao = new DAO();
 	       dao.connect();
-
 	       ResultSet rst = dao.getGame(id);		   
 	       if (rst != null && rst.first()) {
 			   writer.beginObject();
@@ -47,29 +50,46 @@ public class GameServlet extends HttpServlet {
 		       writer.name("next").value(rst.getString(6));
 		       writer.name("move").value(rst.getInt(7));
 			   writer.endObject();
-			   writer.close();	       
+			   writer.close();	  
+			   
+			   msg = sw.toString();
+			   statusCode = Response.Status.OK;
+	       }
+	       else {
+   			// Return 400 Bad Request
+	    	   statusCode = Response.Status.BAD_REQUEST;
 	       }  
-	       
-		   dao.disconnect();
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
+			
+			// Return 500 Internal Server Error
+    		statusCode = Response.Status.INTERNAL_SERVER_ERROR;			
 		}
-	  
-	   return sw.toString();
+		finally {
+			dao.disconnect();	
+		}
+
+		if (statusCode != Response.Status.OK)
+			return Response.status(statusCode).build();
+		else
+			return Response.status(statusCode).entity(msg).build();		
 	}	
 
 	@POST
     @Path("new")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String newGame(Game game) {
+	public Response newGame(Game game) {
+		StatusType statusCode = null;
+		String msg = null;
+		long key = 0;
+		
 		StringWriter sw = new StringWriter();
 		JsonWriter writer = new JsonWriter(sw);
-		long resultCode = 200;
-		long key;
+		DAO dao = new DAO();
 		
-		try {
-			DAO dao = new DAO();
+		try {			
 		    dao.connect();
 		    
 		    // Create a new game (key = game id)
@@ -77,27 +97,31 @@ public class GameServlet extends HttpServlet {
 					           game.getBlack(),
 					           game.getDescription() );
 			if (key == 0) {
-				// return Bad Data
-				resultCode = 203;
+    			// Return 400 Bad Request
+	    		statusCode = Response.Status.BAD_REQUEST;
 			} else {	
 				writer.beginObject();
 				writer.name("id").value(key);
 				writer.endObject();
 				writer.close();
 				
-				// Create a new board for this game
-				key = dao.newBoard(key);
-				if (key == 0) {
-					//return 500 Server Error
-					resultCode = 500;
-				} else
-					return sw.toString();
+				statusCode = Response.Status.OK;
+				msg = sw.toString();
 			}
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			e.printStackTrace();
-			//return 500 Server Error
+			
+			// Return 500 Internal Server Error
+    		statusCode = Response.Status.INTERNAL_SERVER_ERROR;
 		}
-		System.out.println( "resultCode = " + resultCode);
-		return "";		
+		finally {
+			dao.disconnect();
+		}
+
+		if (statusCode != Response.Status.OK)
+			return Response.status(statusCode).build();
+		else
+			return Response.status(statusCode).entity(msg).build();	
 	}
 }
