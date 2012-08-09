@@ -1,0 +1,9 @@
+{"id":1}
+{"id":1,"white":"Fischer","black":"Spassky","description":"Reykjavik","result":null,"next":"W","move":1}
+{"move":1,"white":e2-e4}
+{"move":1,"black":e7-e5}
+{"move":2,"white":g1-f3}
+{"move":2,"black":b8-c6}
+{"move":3,"white":f1-b5}
+{"id":1,"white":"Fischer","black":"Spassky","description":"Reykjavik","result":"","next":"B","move":3}
+{"moves":[{"move":1,"white":"e2-e4","black":"e7-e5"},{"move":2,"white":"g1-f3","black":"b8-c6"},{"move":3,"white":"f1-b5","black":null}]}
