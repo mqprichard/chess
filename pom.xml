@@ -8,16 +8,6 @@
   <name>chess Maven Webapp</name>
   <url>http://maven.apache.org</url>
   
-  <properties>
-    <eclipselink.version>2.4.0</eclipselink.version>
-  </properties>
-  
-  <repositories>
-    <repository>
-      <id>EclipseLink Repo</id>
-      <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url></repository>
-  </repositories>
-  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -46,12 +36,6 @@
 	  <artifactId>jersey-json</artifactId>
 	  <version>1.12</version>
 	</dependency>
-    <dependency>
-      <groupId>org.eclipse.persistence</groupId>
-      <artifactId>eclipselink</artifactId>
-      <version>${eclipselink.version}</version>
-      <scope>compile</scope>
-    </dependency> 
     <dependency>   
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
