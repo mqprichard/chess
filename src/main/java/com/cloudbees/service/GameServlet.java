@@ -42,13 +42,13 @@ public class GameServlet extends HttpServlet {
 	       ResultSet rst = dao.getGame(id);		   
 	       if (rst != null && rst.first()) {
 			   writer.beginObject();
-		       writer.name("id").value(rst.getInt(1));
+		       writer.name("id").value(Long.toString(rst.getInt(1)));
 		       writer.name("white").value(rst.getString(2));	            	
 		       writer.name("black").value(rst.getString(3));
 		       writer.name("description").value(rst.getString(4));
 		       writer.name("result").value(rst.getString(5));
 		       writer.name("next").value(rst.getString(6));
-		       writer.name("move").value(rst.getInt(7));
+		       writer.name("move").value(Long.toString(rst.getInt(7)));
 			   writer.endObject();
 			   writer.close();	  
 			   
@@ -101,7 +101,7 @@ public class GameServlet extends HttpServlet {
 	    		statusCode = Response.Status.BAD_REQUEST;
 			} else {	
 				writer.beginObject();
-				writer.name("id").value(key);
+				writer.name("id").value(Long.toString(key));
 				writer.endObject();
 				writer.close();
 				

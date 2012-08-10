@@ -74,8 +74,9 @@ public class DAO {
     
     public long newGame (String white, String black, String description){
         long key = 0;
-        String sql = "insert into GAME (white, black, description, next, move)"
-                   + " values (\"" + white + "\",\"" + black + "\",\"" + description + "\",\"W\",\"1\")";
+        String sql = "insert into GAME (white, black, description, result, next, move)"
+                   + " values (\"" + white + "\",\"" + black + "\",\"" 
+                   				   + description + "\"," + "\"\",\"W\",\"1\")";
         
         try{
             stmt = getConnection().createStatement();

@@ -42,7 +42,7 @@ public class DAOTest {
 			String testWhite = "Player White";
 			String testBlack = "Player Black";
 			String testDescription = "Match Description";
-		    String testResult = null;
+		    String testResult = "";
 		    String testNext = "W";
 		    long testMove = 1;  
 			
