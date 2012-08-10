@@ -16,11 +16,11 @@ public class DAOTest {
 	
 	DAO dao = new DAO() {
 		public void connect() {
-			  String url = "jdbc:mysql://ec2-75-101-156-134.compute-1.amazonaws.com:3306/mp_chess";
-//			  String dbName = "mp_chess";
+			  String url = "jdbc:mysql://ec2-50-19-213-178.compute-1.amazonaws.com:3306/mp_test";
 			  String driver = "com.mysql.jdbc.Driver";
-			  String userName = "queenbee"; 
+			  String userName = "mp_test"; 
 			  String password = "welcome1";
+			  
 			  try {
 				  Class.forName(driver).newInstance();
 				  conn = DriverManager.getConnection(url,userName,password);
