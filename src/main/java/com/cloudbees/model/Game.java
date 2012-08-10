@@ -4,22 +4,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Game {
-	long id;
+	String id;
 	String white;
 	String black;
 	String next;
-	long move;
+	String move;
 	String result;
 	String description;
 	
 	public Game() {
 		super();
-		this.id = 0;
+		this.id = "";
 		this.white = null;
 		this.black = null;
 		this.description = null;
 		this.next = "W";
-		this.move = 1;
+		this.move = "1";
 		this.result = null;
 	}
 	public String getWhite() {
@@ -46,10 +46,10 @@ public class Game {
 	public void setNext(String next) {
 		this.next = next;
 	}
-	public long getMove() {
+	public String getMove() {
 		return move;
 	}
-	public void setMove(long move) {
+	public void setMove(String move) {
 		this.move = move;
 	}
 	public String getResult() {
@@ -58,7 +58,7 @@ public class Game {
 	public void setResult(String result) {
 		this.result = result;
 	}
-	public long getId() {
+	public String getId() {
 		return id;
 	}
 }
