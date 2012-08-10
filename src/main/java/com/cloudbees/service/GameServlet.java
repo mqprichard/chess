@@ -22,9 +22,6 @@ import com.google.gson.stream.JsonWriter;
 public class GameServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-    
-//	@PersistenceContext(unitName="chess", type=PersistenceContextType.TRANSACTION)
-//	EntityManager entityManager;
 	
 	@GET
     @Path("{id}")	

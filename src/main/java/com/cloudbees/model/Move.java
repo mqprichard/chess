@@ -5,18 +5,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Move {	
 	long id;
-	long move;
+	String move;
 	String white;
 	String black;
-	long game;
+	String game;
 
 	public Move() {
 		super();
 		this.id = 0;
-		this.move = 0;
+		this.move = "";
 		this.white = "";
 		this.black = "";
-		this.game = 0;
+		this.game = "";
 	}
 	
 	public String getWhite() {
@@ -34,16 +34,16 @@ public class Move {
 	public long getId() {
 		return id;
 	}
-	public long getGame() {
+	public String getGame() {
 		return game;
 	}
-	public void setGame(long game) {
+	public void setGame(String game) {
 		this.game = game;
 	}
-	public long getMove() {
+	public String getMove() {
 		return move;
 	}
-	public void setMove(long move) {
+	public void setMove(String move) {
 		this.move = move;
 	}
 

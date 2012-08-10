@@ -95,21 +95,21 @@ public class DAOTest {
 		    // Add white move #1
 		    move.setWhite(testWhite);
 		    move.setBlack("");
-		    move.setMove(testMove);
-		    move.setGame(key);
+		    move.setMove(Long.toString(testMove));
+		    move.setGame(Long.toString(key));
 		    
-		    rows = dao.newWhiteMove( move.getMove(), 
+		    rows = dao.newWhiteMove( Long.valueOf(move.getMove()), 
 					  		  		 move.getWhite(), 
-					  		  		 move.getGame());
+					  		  		 Long.valueOf(move.getGame()));
 		    assertFalse(rows == 0);
 		    
 		    // Add black move #1
 		    move.setWhite("");
 		    move.setBlack(testBlack);
 		    
-		    rows = dao.newBlackMove( move.getMove(), 
+		    rows = dao.newBlackMove( Long.valueOf(move.getMove()), 
 			  		  		  		 move.getBlack(), 
-			  		  		  		 move.getGame());
+			  		  		  		 Long.valueOf(move.getGame()));
 		    assertFalse(rows == 0);
 		    
 		    // Check the row for move #1

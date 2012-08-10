@@ -18,6 +18,9 @@ import com.google.gson.stream.JsonWriter;
 
 @Path("/moves")
 public class MoveServlet {
+	
+	public enum Player { WHITE, BLACK };
+	
 	@GET
     @Path("{id}")	
 	@Produces(MediaType.APPLICATION_JSON)
@@ -39,7 +42,7 @@ public class MoveServlet {
 	       if (rst != null && rst.first()) {
 		    	do { 
 			          writer.beginObject();
-			          writer.name("move").value(rst.getInt(2));
+			          writer.name("move").value(Long.toString(rst.getInt(2)));
 			          writer.name("white").value(rst.getString(3));	            	
 			          writer.name("black").value(rst.getString(4));
 		              writer.endObject();
@@ -80,59 +83,80 @@ public class MoveServlet {
 	public Response newMove( Move move ) {
 		StatusType statusCode = null;
 		String msg = null;
+		Player player = null;
 
 		DAO dao = new DAO();
 		
 		try {
 		    dao.connect();
 		    
-		    ResultSet rst = dao.getGame(move.getGame());		   
+		    ResultSet rst = dao.getGame(Long.valueOf(move.getGame()));		   
 		    if (rst != null && rst.first()) {
 		    	long nextMove = rst.getInt(7);
 		    	String nextPlayer = rst.getString(6);
+		    	String theMove = null;
 		    	
+		    	if ( nextPlayer.equalsIgnoreCase("W") ) {
+					player = Player.WHITE;
+					theMove = move.getWhite();
+		    	}
+		    	else {
+		    		player = Player.BLACK;
+		    		theMove = move.getBlack();
+		    	}
+		    	
+		    	// Out of sequence
+		    	if ( ( ( player == Player.WHITE ) && ( nextPlayer.equalsIgnoreCase("B") ) )
+		    		 || ( ( player == Player.BLACK ) && ( nextPlayer.equalsIgnoreCase("W") ) ) )
+		    		// Return 400 Bad Request
+		    		return Response.status(Response.Status.BAD_REQUEST).build();
+		    	
+		    	// Wrong move number
+		    	if ( Long.valueOf(move.getMove()) != nextMove )
+		    		// Return 400 Bad Request
+		    		return Response.status(Response.Status.BAD_REQUEST).build();
+		    	
+		    	// Invalid move syntax
+		    	if (! move.isLegal( theMove ))
+		    		// Return 400 Bad Request
+		    		return Response.status(Response.Status.BAD_REQUEST).build();		    		
+		    		
 		    	// White to move
-		    	if (nextPlayer.equalsIgnoreCase("w")) {
-		    		if (! move.isLegal( move.getWhite() )) {
-		    			// Bad syntax: Return 400 Bad Request
-			    		statusCode = Response.Status.BAD_REQUEST;
-		    		} else {
-		    			if (dao.newWhiteMove( move.getMove(), 
+		    	if ( player == Player.WHITE ) {
+
+		    			if (dao.newWhiteMove( Long.valueOf(move.getMove()), 
 		    								  move.getWhite(), 
-		    					              move.getGame()) == 0 ) 
-			    			// Bad Move/Game: Return 400 Bad Request
+		    					              Long.valueOf(move.getGame())) == 0 ) 
+			    			// Cannot add Move: Return 400 Bad Request
 				    		statusCode = Response.Status.BAD_REQUEST;
-		    			else if (dao.updateGame( move.getGame(), nextMove, "B", "") == 0)
+		    			else if (dao.updateGame( Long.valueOf(move.getGame()), 
+		    									 nextMove, "B", "") == 0)
 			    			// Cannot update Game: Return 400 Bad Request
 		    				statusCode = Response.Status.BAD_REQUEST;
 		    			else {
-		    				msg = "{\"move\":" + move.getMove() 
-		    					+ ",\"white\":" + move.getWhite() + "}";
+		    				msg = "{\"move\":\"" + move.getMove() 
+		    					+ "\",\"white\":\"" + move.getWhite() + "\"}";
 			    			// Return 200 OK
 				    		statusCode = Response.Status.OK;
 		    			}
-		    		}
 		    	}
 		    	// Black to move
-		    	else {
-		    		if (! move.isLegal( move.getBlack() )) {
-		    			// Bad syntax: Return 400 Bad Request
-			    		statusCode = Response.Status.BAD_REQUEST;
-		    		} else { 
-		    			if (dao.newBlackMove( move.getMove(), 
-		    								  move.getBlack(), 
-		    								  move.getGame()) == 0 )
-		    				// Bad Move/Game: Return 400 Bad Request
-				    		statusCode = Response.Status.BAD_REQUEST;
-		    			else if (dao.updateGame( move.getGame(), nextMove+1, "W", "") == 0)
-		    				// Cannot update Game: Return 400 Bad Request
-		    				statusCode = Response.Status.BAD_REQUEST;		    			
-		    			else {
-		    				msg = "{\"move\":" + move.getMove() 
-		    					+ ",\"black\":" + move.getBlack() + "}";
-		    				// Return 200 OK
-		    				statusCode = Response.Status.OK;
-		    			}
+		    	else { 
+		    		if (dao.newBlackMove( Long.valueOf(move.getMove()), 
+		    							  move.getBlack(), 
+		    							  Long.valueOf(move.getGame())) == 0 )
+		    			// Cannot updqte Move: Return 400 Bad Request
+				    	statusCode = Response.Status.BAD_REQUEST;
+		    			
+		    		else if (dao.updateGame( Long.valueOf(move.getGame()), 
+		    							     nextMove+1, "W", "") == 0)
+		    			// Cannot update Game: Return 400 Bad Request
+		    			statusCode = Response.Status.BAD_REQUEST;		    			
+		    		else {
+		    			msg = "{\"move\":\"" + move.getMove() 
+		    				+ "\",\"black\":\"" + move.getBlack() + "\"}";
+		    			// Return 200 OK
+		    			statusCode = Response.Status.OK;
 		    		}
 		    	}
 		    }		    
