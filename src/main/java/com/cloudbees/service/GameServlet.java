@@ -22,6 +22,7 @@ import com.google.gson.stream.JsonWriter;
 public class GameServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+	private DAO dao = new DAO();
 	
 	@GET
     @Path("{id}")	
@@ -32,7 +33,7 @@ public class GameServlet extends HttpServlet {
 		
 		StringWriter sw = new StringWriter();
 		JsonWriter writer = new JsonWriter(sw);
-	    DAO dao = new DAO();
+	    DAO dao = getDAO();
 		
 		try {
 	       dao.connect();
@@ -84,7 +85,7 @@ public class GameServlet extends HttpServlet {
 		
 		StringWriter sw = new StringWriter();
 		JsonWriter writer = new JsonWriter(sw);
-		DAO dao = new DAO();
+		DAO dao = getDAO();
 		
 		try {			
 		    dao.connect();
@@ -120,5 +121,13 @@ public class GameServlet extends HttpServlet {
 			return Response.status(statusCode).build();
 		else
 			return Response.status(statusCode).entity(msg).build();	
+	}
+
+	protected DAO getDAO() {
+		return dao;
+	}
+
+	protected void setDAO(DAO dao) {
+		this.dao = dao;
 	}
 }
