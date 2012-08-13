@@ -20,6 +20,7 @@ import com.google.gson.stream.JsonWriter;
 public class MoveServlet {
 	
 	public enum Player { WHITE, BLACK };
+	private DAO dao = new DAO();
 	
 	@GET
     @Path("{id}")	
@@ -29,7 +30,7 @@ public class MoveServlet {
 		
 		StringWriter sw = new StringWriter();
 		JsonWriter writer = new JsonWriter(sw);
-	    DAO dao = new DAO();
+	    DAO dao = getDAO();
 
 		try {
 	       dao.connect();
@@ -85,7 +86,7 @@ public class MoveServlet {
 		String msg = null;
 		Player player = null;
 
-		DAO dao = new DAO();
+		DAO dao = getDAO();
 		
 		try {
 		    dao.connect();
@@ -176,5 +177,13 @@ public class MoveServlet {
 		else
 			return Response.status(statusCode).entity(msg).build();		
 	}
+	
+	protected DAO getDAO() {
+		return dao;
+	}
+
+	protected void setDAO(DAO dao) {
+		this.dao = dao;
+	}	
 }
 

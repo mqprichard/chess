@@ -31,6 +31,9 @@ public class Move {
 	public void setBlack(String black) {
 		this.black = black;
 	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public long getId() {
 		return id;
 	}
